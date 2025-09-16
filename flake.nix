@@ -16,6 +16,7 @@
           matplotlib
           ipython
           ipywidgets
+          ipympl
           jupyter
         ]);
 
