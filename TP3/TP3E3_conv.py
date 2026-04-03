@@ -48,8 +48,8 @@ def _(mo):
 
 @app.cell
 def _():
-    import numpy as np
     import matplotlib.pyplot as plt
+    import numpy as np
 
     return np, plt
 
@@ -59,14 +59,22 @@ def _(mo):
     mo.md(r"""
     ### 2. Definición de las Señales
 
-    Vamos a definir algunas de las funciones de referencia que tenemos como `cajon(t)`, `escalon(t)` y `triangulo(t)`, en función de un dado vector de tiempo `t`.
+    Vamos a definir algunas de las funciones de referencia que tenemos como `cajon(t)`, `escalon(t)` y `triangulo(t)`, en función de un dado vector de tiempo `t`. En base a estas, podemos definir las señales a convolucionar.
 
-    En base a estas, podemos definir las señales a convolucionar. Por defecto usaremos:
+    Por defecto usaremos:
 
     - $x(t) = 1/2\sqcap(t-1)$
     - $h(t) = \sqcap(t/2)$
 
-    Con `t` definido en el rango [-8, 8]. Pero pueden modificar estos valores para visualizar otras convoluciones. Por ejemplo: np.exp(-t)*escalon(t)
+    Pero pueden modificar estos valores para visualizar otras convoluciones. Pueden usar las funciones conocidas que mencionamos, y acceder a funciones de NumPy mediante `np`. Por ejemplo, otras funciones que pueden probar:
+
+    | Expresión                      | Señal resultante |
+    |:-------------------------------|:------------------|
+    | `escalon(t) - escalon(t-2)`    | Cajón entre 0 y 2 |
+    | `np.exp(-t) * escalon(t)`      | Exponencial decreciente que arranca en 0 |
+    | `triangulo(t/2) * np.cos(2*t)` | Coseno modulado en amplitud por un triángulo |
+
+    > **Nota:** el vector de tiempo `t` está definido en el rango $[-8, 8]$ para simplificar las figuras, tener en cuenta a la hora de la definición de las señales.
     """)
     return
 
@@ -78,7 +86,7 @@ def _(mo, np):
         Define una función cajón.
         Vale 1 para valores de t entre '-1/2' y '1/2', y 0 en el resto.
         """
-        return np.where((np.abs(t) <= 1/2), 1, 0)
+        return np.where((np.abs(t) <= 1 / 2), 1, 0)
 
     def triangulo(t):
         """
@@ -104,7 +112,13 @@ def _(cajon, escalon, h_str, np, triangulo, x_str):
     # Definimos un vector de tiempo común para trabajar.
     t = np.linspace(-8, 8, 2000)
 
-    namespace = {"np": np, "t": t, "cajon": cajon, "triangulo": triangulo, "escalon": escalon}
+    namespace = {
+        "np": np,
+        "t": t,
+        "cajon": cajon,
+        "triangulo": triangulo,
+        "escalon": escalon,
+    }
 
     try:
         x_t = eval(x_str.value, {"__builtins__": {}}, namespace)
@@ -128,7 +142,7 @@ def _(cajon, escalon, h_str, np, triangulo, x_str):
 
         candidates = np.array(candidates)
         new = candidates[~np.isin(candidates, edge_idx)]
-        edge_idx = np.sort(np.concatenate([edge_idx, new]))
+        edge_idx = np.sort(np.concatenate([edge_idx, new])).astype(int)
 
     # Redondeo a 1 decimal.
     edge_times = np.round(t[edge_idx], 1)
@@ -137,7 +151,7 @@ def _(cajon, escalon, h_str, np, triangulo, x_str):
     if not np.any(edge_times == 0.0):
         edge_times = np.sort(np.append(edge_times, 0.0))
 
-    edge_times
+    # edge_idx
     return edge_times, h_t, t, x_t
 
 
@@ -159,23 +173,23 @@ def _(h_t, np, plt, t, x_t):
     _hmax, _hmin = max(np.max(h_t) * 1.2, 0.1), min(np.min(h_t) * 1.2, -0.1)
 
     # Limito las graficas coherentemente, para facilitar la comparacion.
-    figmin, figmax = min(_xmin, _hmin), max(_xmax,_hmax)
+    figmin, figmax = min(_xmin, _hmin), max(_xmax, _hmax)
 
     # Gráfica de x(t)
     _ax1.plot(t, x_t, linewidth=2)
-    _ax1.set_title('$x(t)$')
-    _ax1.set_xlabel('t')
-    _ax1.set_ylabel('$x(t)$')
-    _ax1.grid(linestyle='--', linewidth=.1)
+    _ax1.set_title("$x(t)$")
+    _ax1.set_xlabel("t")
+    _ax1.set_ylabel("$x(t)$")
+    _ax1.grid(linestyle="--", linewidth=0.1)
     _ax1.set_ylim(figmin, figmax)
     _ax1.set_xlim(-4, 4)
 
     # Gráfica de h(t)
     _ax2.plot(t, h_t, linewidth=2)
-    _ax2.set_title('$h(t)$')
-    _ax2.set_xlabel('t')
-    _ax2.set_ylabel('$h(t)$')
-    _ax2.grid(linestyle='--', linewidth=.1)
+    _ax2.set_title("$h(t)$")
+    _ax2.set_xlabel("t")
+    _ax2.set_ylabel("$h(t)$")
+    _ax2.grid(linestyle="--", linewidth=0.1)
     _ax2.set_ylim(figmin, figmax)
     _ax2.set_xlim(-4, 4)
     plt.tight_layout()
@@ -228,23 +242,24 @@ def _(h_t, np, plt, t, x_t):
     dt = t[1] - t[0]
 
     # Pre-calculamos la convolución completa como referencia para el tercer gráfico.
-    y_complete = np.convolve(x_t, h_t, mode='full') * dt
-    t_conv = np.arange(0, len(y_complete)) * dt + 2*t[0]
+    y_complete = np.convolve(x_t, h_t, mode="full") * dt
+    t_conv = np.arange(0, len(y_complete)) * dt + 2 * t[0]
 
+    ymax, ymin = max(np.max(y_complete) * 1.2, 0.1), min(np.min(y_complete) * 1.2, -0.1)
 
     fig2, axes = plt.subplot_mosaic(
-        [["top_left", "top_right"],
-         ["bot",   "bot"]],
-        figsize=(12, 10)
+        [["top_left", "top_right"], ["bot", "bot"]], figsize=(12, 10)
     )
 
     ax1, ax2, ax3 = axes["top_left"], axes["top_right"], axes["bot"]
-    return ax1, ax2, ax3, fig2, t_conv, tau, y_complete
+    return ax1, ax2, ax3, fig2, t_conv, tau, y_complete, ymax, ymin
 
 
 @app.cell
 def _(mo):
-    slider = mo.ui.slider(start=-3.0, stop=5.0, step=0.05, value=-3, label='Tiempo (t)', show_value=True)
+    slider = mo.ui.slider(
+        start=-3.0, stop=4.0, step=0.1, value=-3, label="Tiempo (t)", show_value=True
+    )
     slider
     return (slider,)
 
@@ -266,6 +281,8 @@ def _(
     tau,
     x_t,
     y_complete,
+    ymax,
+    ymin,
 ):
     t_val = slider.value
 
@@ -274,25 +291,34 @@ def _(
 
     # SUBPLOT 1: Señales x(τ) y h(t-τ) superpuestas
     ax1.clear()
-    ax1.plot(tau, x_t, 'b-', linewidth=2, label="x(τ)", alpha=0.8)
-    ax1.plot(tau, h_rd_t, 'r-', linewidth=2, label=f'h({t_val:.2f}-τ)', alpha=0.8)
+    ax1.plot(tau, x_t, "b-", linewidth=2, label="x(τ)", alpha=0.8)
+    ax1.plot(tau, h_rd_t, "r-", linewidth=2, label=f"h({t_val:.2f}-τ)", alpha=0.8)
     ax1.set_xlabel("τ (variable de integración)")
-    ax1.set_ylabel('Amplitud')  
-    ax1.set_title('Señales: x(τ) y h(t-τ)')
-    ax1.grid(linestyle='--', linewidth=.1)
-    ax1.legend() 
+    ax1.set_ylabel("Amplitud")
+    ax1.set_title("Señales: x(τ) y h(t-τ)")
+    ax1.grid(linestyle="--", linewidth=0.1)
+    ax1.legend()
     ax1.set_ylim(figmin, figmax)
     ax1.set_xlim(-4, 4)
-    ax1.axvline(x=t_val, color='black', linestyle='--', alpha=0.3, label=f't = {t_val:.2f}')
+    ax1.axvline(
+        x=t_val, color="black", linestyle="--", alpha=0.3, label=f"t = {t_val:.2f}"
+    )
 
     # SUBPLOT 2: Integrando: producto x(τ) · h(t-τ)
     integrando = x_t * h_rd_t
     ax2.clear()
-    ax2.plot(tau, integrando, 'g-', linewidth=2, label='x(τ) · h(t-τ)')
-    ax2.fill_between(tau, 0, integrando, alpha=0.4, color='green', label=f'Área = {np.trapezoid(integrando, tau):.3f}')
-    ax2.set_xlabel('τ (variable de integración)')
-    ax2.set_ylabel('Amplitud')
-    ax2.set_title('Integrando (Producto x(τ) · h(t-τ))')
+    ax2.plot(tau, integrando, "g-", linewidth=2, label="x(τ) · h(t-τ)")
+    ax2.fill_between(
+        tau,
+        0,
+        integrando,
+        alpha=0.4,
+        color="green",
+        label=f"Área = {np.trapezoid(integrando, tau):.3f}",
+    )
+    ax2.set_xlabel("τ (variable de integración)")
+    ax2.set_ylabel("Amplitud")
+    ax2.set_title("Integrando (Producto x(τ) · h(t-τ))")
     ax2.grid(True, alpha=0.3)
     ax2.legend()  # Linea con el valor de t_val:
     ax2.set_ylim(figmin, figmax)
@@ -301,31 +327,66 @@ def _(
     # SUBPLOT 3: Convolución y(t)
     t_indices = t_conv <= t_val
     ax3.clear()
-    ax3.plot(t_conv[t_indices], y_complete[t_indices], 'purple', linewidth=3, label='y(t) = x(t) * h(t)')
-    ax3.plot(t_conv, y_complete, 'purple', linewidth=1, alpha=0.3, linestyle='--', label='y(t) completa')
+    ax3.plot(
+        t_conv[t_indices],
+        y_complete[t_indices],
+        "purple",
+        linewidth=3,
+        label="y(t) = x(t) * h(t)",
+    )
+    ax3.plot(
+        t_conv,
+        y_complete,
+        "purple",
+        linewidth=1,
+        alpha=0.3,
+        linestyle="--",
+        label="y(t) completa",
+    )
 
     if t_val >= t_conv[0] and t_val <= t_conv[-1]:
         idx_current = np.argmin(np.abs(t_conv - t_val))
         if idx_current < len(y_complete):
-            ax3.plot(t_val, y_complete[idx_current], 'ro', markersize=8, 
-                     label=f'y({t_val:.2f}) = {y_complete[idx_current]:.3f}')
+            ax3.plot(
+                t_val,
+                y_complete[idx_current],
+                "ro",
+                markersize=8,
+                label=f"y({t_val:.2f}) = {y_complete[idx_current]:.3f}",
+            )
 
-    ax3.set_xlabel('Tiempo t')
-    ax3.set_ylabel('y(t)')
-    ax3.set_title('Resultado de la convolución')
+    ax3.set_xlabel("Tiempo t")
+    ax3.set_ylabel("y(t)")
+    ax3.set_title("Resultado de la convolución")
     ax3.grid(True, alpha=0.1)
     ax3.legend()
-    ax3.set_ylim(figmin, figmax)
+    ax3.set_ylim(ymin, ymax)
     ax3.set_xlim(-4, 4)
 
     for mark in edge_times:
         mark_idx = t_val - mark
         if mark_idx > 4 or mark_idx < -4:
             continue
-        ax1.axvline(x=mark_idx, linestyle='-', alpha=0.2, label='_nolegend_')
-        ax1.text(mark_idx, -0.08, 't' if mark == 0 else f't{-mark:+0.1f}', ha='center', va='bottom', fontsize=10, rotation=0)
-        ax2.axvline(x=mark_idx, linestyle=':', alpha=0.2, label='_nolegend_')
-        ax2.text(mark_idx, -0.08, 't' if mark == 0 else f't{-mark:+0.1f}', ha='center', va='bottom', fontsize=10, rotation=0)
+        ax1.axvline(x=mark_idx, linestyle="-", alpha=0.2, label="_nolegend_")
+        ax1.text(
+            mark_idx,
+            -0.08,
+            "t" if mark == 0 else f"t{-mark:+0.1f}",
+            ha="center",
+            va="bottom",
+            fontsize=10,
+            rotation=0,
+        )
+        ax2.axvline(x=mark_idx, linestyle=":", alpha=0.2, label="_nolegend_")
+        ax2.text(
+            mark_idx,
+            -0.08,
+            "t" if mark == 0 else f"t{-mark:+0.1f}",
+            ha="center",
+            va="bottom",
+            fontsize=10,
+            rotation=0,
+        )
     plt.tight_layout()
 
     fig2
