@@ -48,8 +48,8 @@ def _(mo):
 
 @app.cell
 def _():
-    import matplotlib.pyplot as plt
     import numpy as np
+    import matplotlib.pyplot as plt
 
     return np, plt
 
