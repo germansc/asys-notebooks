@@ -11,28 +11,27 @@
       let
         pkgs = import nixpkgs { inherit system; };
 
+        # Raw python packages.
         pythonEnv = pkgs.python3.withPackages (ps: with ps; [
           numpy
           matplotlib
-          ipython
-          ipywidgets
-          ipympl
-          jupyter
+          scipy
+          marimo
         ]);
 
         tools = with pkgs; [
-            pyright
-            ruff
-            black
+          pyright
+          ruff
+          uv
         ];
 
       in {
         devShells.default = pkgs.mkShell {
-          name = "sp-notebooks";
+          name = "asys-notebooks";
           buildInputs = [ pythonEnv ] ++ tools;
           shellHook = ''
-            echo "Jupyter environment ready:"
-            jupyter lab
+            echo "Marimo environment ready."
+            echo ""
           '';
         };
       }
