@@ -226,11 +226,18 @@ def _(mo):
     mo.md(r"""
     ### 5. Visualización Interactiva
 
-    El siguiente bloque te permite variar el desplazamiento $t$ con un slider, y observar cómo cambian las tres gráficas para entender el proceso:
+    El siguiente bloque te permite variar el desplazamiento $t$ con un slider, y observar cómo
+    cambian las tres gráficas para entender el proceso:
 
-    1.  **Gráfica 1 (Izquierda)**: Muestra la señal fija $x(\tau)$ (azul) y la señal invertida y desplazada $h(t - \tau)$ (rojo), y el valor de desplazamiento t en la barra negra vertical.
-    2.  **Gráfica 2 (Derecha)**: Muestra el producto punto a punto de las dos señales anteriores, es decir **el integrando** de la convolución para un valor de $t$ dado. El **área sombreada en rojo** representa el valor de la integral de dicho producto. Este área es, literalmente, el valor de $y(t)$ en ese instante $t$.
-    3.  **Gráfica 3 (Abajo)**: Muestra la señal de salida $y(t)$ que se va construyendo a medida que barremos el valor de $t$. El punto resalta el valor actual que se está calculando, es decir el valor del área sombreada en la gráfica 2.
+    1.  **Gráfica 1 (Izquierda)**: Muestra la señal fija $x(\tau)$ (azul) y la señal reflejada y
+    desplazada $h(t - \tau)$ (rojo), y el valor del desplazamiento t (en $\tau$) como una barra negra vertical.
+    2.  **Gráfica 2 (Derecha)**: Muestra el producto punto a punto de las dos señales anteriores, es
+    decir **el integrando** de la convolución para un valor de $t$ dado. El **área sombreada en
+    rojo** representa el valor de la integral de dicho producto. Este área es, literalmente, el
+    valor de $y(t)$ en ese instante $t$.
+    3.  **Gráfica 3 (Abajo)**: Muestra la señal de salida $y(t)$ que se va construyendo a medida que
+    barremos el valor de $t$. El punto resalta el valor actual que se está calculando, es decir el
+    valor del área sombreada en la gráfica 2.
     """)
     return
 
