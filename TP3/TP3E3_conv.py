@@ -73,6 +73,7 @@ def _(mo):
     | `escalon(t) - escalon(t-2)`    | Cajón entre 0 y 2 |
     | `np.exp(-t) * escalon(t)`      | Exponencial decreciente que arranca en 0 |
     | `triangulo(t/2) * np.cos(2*t)` | Coseno modulado en amplitud por un triángulo |
+    | `t**2 * cajon(t-1/2)`          | Función cuadrática entre 0 y 1 |
 
     > **Nota:** el vector de tiempo `t` está definido en el rango $[-8, 8]$ para simplificar las figuras, tener en cuenta a la hora de la definición de las señales.
     """)
