@@ -172,7 +172,7 @@ def _(h_t, np, plt, t, x_t):
     _xmax, _xmin = max(np.max(x_t) * 1.2, 0.1), min(np.min(x_t) * 1.2, -0.1)
     _hmax, _hmin = max(np.max(h_t) * 1.2, 0.1), min(np.min(h_t) * 1.2, -0.1)
 
-    # Limito las graficas coherentemente, para facilitar la comparacion.
+    # Limito las gráficas coherentemente, para facilitar la comparación.
     figmin, figmax = min(_xmin, _hmin), max(_xmax, _hmax)
 
     # Gráfica de x(t)
