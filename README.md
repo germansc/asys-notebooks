@@ -10,6 +10,7 @@ Notebooks interactivos para las materias **Análisis de Sistemas y Señales** e
 | Notebook | Tema | Abrir en molab |
 |---|---|---|
 | `TP3/TP3E3_conv.py` | TP3 — Ejercicio 3: Convolución | [![Open in molab](https://marimo.io/molab-shield.svg)](https://molab.marimo.io/github/germansc/asys-notebooks/blob/master/TP3/TP3E3_conv.py/wasm?show-code=false) |
+| `TP7/TP7E2.py` | TP7 — Ejercicio 2: TDF de un coseno | [![Open in molab](https://marimo.io/molab-shield.svg)](https://molab.marimo.io/github/germansc/asys-notebooks/blob/master/TP7/TP7E2.py/wasm?show-code=false) |
 
 > Los notebooks se pueden abrir en molab directamente en el navegador sin
 > necesidad de instalar nada. Al abrirlos, se presenta una vista previa estática
